@@ -1,0 +1,185 @@
+Version 4
+SymbolType BLOCK
+TEXT 32 32 LEFT 4 xlnx_axis_mux
+RECTANGLE Normal 32 32 800 8896
+LINE Normal 0 80 32 80
+PIN 0 80 LEFT 36
+PINATTR PinName aclk
+PINATTR Polarity IN
+LINE Normal 0 144 32 144
+PIN 0 144 LEFT 36
+PINATTR PinName aresetn
+PINATTR Polarity IN
+LINE Normal 0 176 32 176
+PIN 0 176 LEFT 36
+PINATTR PinName s00_axis_aclk
+PINATTR Polarity IN
+LINE Normal 0 240 32 240
+PIN 0 240 LEFT 36
+PINATTR PinName s00_axis_aresetn
+PINATTR Polarity IN
+LINE Normal 0 272 32 272
+PIN 0 272 LEFT 36
+PINATTR PinName s00_axis_tvalid
+PINATTR Polarity IN
+LINE Normal 0 304 32 304
+PIN 0 304 LEFT 36
+PINATTR PinName s00_axis_tready
+PINATTR Polarity OUT
+LINE Wide 0 336 32 336
+PIN 0 336 LEFT 36
+PINATTR PinName s00_axis_tdata[63:0]
+PINATTR Polarity IN
+LINE Normal 0 432 32 432
+PIN 0 432 LEFT 36
+PINATTR PinName s00_axis_tlast
+PINATTR Polarity IN
+LINE Wide 0 496 32 496
+PIN 0 496 LEFT 36
+PINATTR PinName s00_axis_tdest[1:0]
+PINATTR Polarity IN
+LINE Normal 0 592 32 592
+PIN 0 592 LEFT 36
+PINATTR PinName s00_decode_err
+PINATTR Polarity OUT
+LINE Normal 0 688 32 688
+PIN 0 688 LEFT 36
+PINATTR PinName s00_arb_req_suppress
+PINATTR Polarity IN
+LINE Normal 0 720 32 720
+PIN 0 720 LEFT 36
+PINATTR PinName s01_axis_aclk
+PINATTR Polarity IN
+LINE Normal 0 784 32 784
+PIN 0 784 LEFT 36
+PINATTR PinName s01_axis_aresetn
+PINATTR Polarity IN
+LINE Normal 0 816 32 816
+PIN 0 816 LEFT 36
+PINATTR PinName s01_axis_tvalid
+PINATTR Polarity IN
+LINE Normal 0 848 32 848
+PIN 0 848 LEFT 36
+PINATTR PinName s01_axis_tready
+PINATTR Polarity OUT
+LINE Wide 0 880 32 880
+PIN 0 880 LEFT 36
+PINATTR PinName s01_axis_tdata[63:0]
+PINATTR Polarity IN
+LINE Normal 0 976 32 976
+PIN 0 976 LEFT 36
+PINATTR PinName s01_axis_tlast
+PINATTR Polarity IN
+LINE Wide 0 1040 32 1040
+PIN 0 1040 LEFT 36
+PINATTR PinName s01_axis_tdest[1:0]
+PINATTR Polarity IN
+LINE Normal 0 1136 32 1136
+PIN 0 1136 LEFT 36
+PINATTR PinName s01_decode_err
+PINATTR Polarity OUT
+LINE Normal 0 1232 32 1232
+PIN 0 1232 LEFT 36
+PINATTR PinName s01_arb_req_suppress
+PINATTR Polarity IN
+LINE Normal 0 1264 32 1264
+PIN 0 1264 LEFT 36
+PINATTR PinName s02_axis_aclk
+PINATTR Polarity IN
+LINE Normal 0 1328 32 1328
+PIN 0 1328 LEFT 36
+PINATTR PinName s02_axis_aresetn
+PINATTR Polarity IN
+LINE Normal 0 1360 32 1360
+PIN 0 1360 LEFT 36
+PINATTR PinName s02_axis_tvalid
+PINATTR Polarity IN
+LINE Normal 0 1392 32 1392
+PIN 0 1392 LEFT 36
+PINATTR PinName s02_axis_tready
+PINATTR Polarity OUT
+LINE Wide 0 1424 32 1424
+PIN 0 1424 LEFT 36
+PINATTR PinName s02_axis_tdata[63:0]
+PINATTR Polarity IN
+LINE Normal 0 1520 32 1520
+PIN 0 1520 LEFT 36
+PINATTR PinName s02_axis_tlast
+PINATTR Polarity IN
+LINE Wide 0 1584 32 1584
+PIN 0 1584 LEFT 36
+PINATTR PinName s02_axis_tdest[1:0]
+PINATTR Polarity IN
+LINE Normal 0 1680 32 1680
+PIN 0 1680 LEFT 36
+PINATTR PinName s02_decode_err
+PINATTR Polarity OUT
+LINE Normal 0 1776 32 1776
+PIN 0 1776 LEFT 36
+PINATTR PinName s02_arb_req_suppress
+PINATTR Polarity IN
+LINE Normal 0 1808 32 1808
+PIN 0 1808 LEFT 36
+PINATTR PinName s03_axis_aclk
+PINATTR Polarity IN
+LINE Normal 0 1872 32 1872
+PIN 0 1872 LEFT 36
+PINATTR PinName s03_axis_aresetn
+PINATTR Polarity IN
+LINE Normal 0 1904 32 1904
+PIN 0 1904 LEFT 36
+PINATTR PinName s03_axis_tvalid
+PINATTR Polarity IN
+LINE Normal 0 1936 32 1936
+PIN 0 1936 LEFT 36
+PINATTR PinName s03_axis_tready
+PINATTR Polarity OUT
+LINE Wide 0 1968 32 1968
+PIN 0 1968 LEFT 36
+PINATTR PinName s03_axis_tdata[63:0]
+PINATTR Polarity IN
+LINE Normal 0 2064 32 2064
+PIN 0 2064 LEFT 36
+PINATTR PinName s03_axis_tlast
+PINATTR Polarity IN
+LINE Wide 0 2128 32 2128
+PIN 0 2128 LEFT 36
+PINATTR PinName s03_axis_tdest[1:0]
+PINATTR Polarity IN
+LINE Normal 0 2224 32 2224
+PIN 0 2224 LEFT 36
+PINATTR PinName s03_decode_err
+PINATTR Polarity OUT
+LINE Normal 0 2320 32 2320
+PIN 0 2320 LEFT 36
+PINATTR PinName s03_arb_req_suppress
+PINATTR Polarity IN
+LINE Normal 832 144 800 144
+PIN 832 144 RIGHT 36
+PINATTR PinName m00_axis_aclk
+PINATTR Polarity IN
+LINE Normal 832 208 800 208
+PIN 832 208 RIGHT 36
+PINATTR PinName m00_axis_aresetn
+PINATTR Polarity IN
+LINE Normal 832 240 800 240
+PIN 832 240 RIGHT 36
+PINATTR PinName m00_axis_tvalid
+PINATTR Polarity OUT
+LINE Normal 832 272 800 272
+PIN 832 272 RIGHT 36
+PINATTR PinName m00_axis_tready
+PINATTR Polarity IN
+LINE Wide 832 304 800 304
+PIN 832 304 RIGHT 36
+PINATTR PinName m00_axis_tdata[63:0]
+PINATTR Polarity OUT
+LINE Normal 832 400 800 400
+PIN 832 400 RIGHT 36
+PINATTR PinName m00_axis_tlast
+PINATTR Polarity OUT
+LINE Wide 832 464 800 464
+PIN 832 464 RIGHT 36
+PINATTR PinName m00_axis_tdest[1:0]
+PINATTR Polarity OUT
+
