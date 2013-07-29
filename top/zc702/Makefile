@@ -49,8 +49,11 @@ TOP_SRCS = \
 	coregen/xlnx_axi_fifo.xco \
 	coregen/xlnx_axi_fifo8.xco \
 	coregen/xlnx_axi_fifo32.xco \
+	coregen/xlnx_axis_mux.xco \
+	coregen/xlnx_axis_demux.xco \
 	coregen/chipscope_icon.xco \
-	coregen/chipscope_ila_large.xco
+	coregen/chipscope_ila_large.xco \
+        coregen/fir_filter.xco
 
 
 SOURCES = \
