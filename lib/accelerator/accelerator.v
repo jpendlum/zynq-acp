@@ -23,6 +23,7 @@ module accelerator
   parameter integer C_M_AXI_DATA_WIDTH       = 64,
   parameter integer C_AXIS_DATA_WIDTH        = 64,
   parameter integer C_AXIS_HOST_DATA_WIDTH   = 32,
+  parameter integer C_AXIS_TDEST_WIDTH       = 2,
   parameter integer C_BASEADDR               = 32'h40000000,
   parameter integer C_HIGHADDR               = 32'h4001ffff,
   parameter         C_PROT                   = 3'b010,
@@ -105,12 +106,14 @@ module accelerator
   wire                                 h2s_tlast;
   wire                                 h2s_tvalid;
   wire                                 h2s_tready;
+  wire [C_AXIS_TDEST_WIDTH-1:0]        h2s_tdest;
 
   // AXI stream from custom hardware
   wire [C_AXIS_DATA_WIDTH-1:0]         s2h_tdata;
   wire                                 s2h_tlast;
   wire                                 s2h_tvalid;
   wire                                 s2h_tready;
+  wire [C_AXIS_TDEST_WIDTH-1:0]        s2h_tdest;
 
   // AXI stream to custom hardware command and status signals
   wire [C_AXIS_HOST_DATA_WIDTH-1+40:0] h2s_cmd_tdata;
@@ -133,6 +136,8 @@ module accelerator
   //------------------------------------------------------------------
   //only active in cycles between command and tlast
   //this prevents bullshit consumption after tlast
+
+  /*
   reg s2h_active;
   always @(posedge clk) begin
     if (rst) s2h_active <= 1;
@@ -145,20 +150,22 @@ module accelerator
   assign s2h_tvalid_int = s2h_tvalid && s2h_active;
   assign s2h_tready = s2h_tready_int && s2h_active;
 
+  */
+
 
   //------------------------------------------------------------------
   //-- chipscope
   //------------------------------------------------------------------
   wire [35:0] CONTROL;
-  wire [1023:0] DATA;
+  wire [2047:0] DATA;
   wire [7:0] TRIG;
 
-  chipscope_icon chipscope_icon(.CONTROL0(CONTROL));
-  chipscope_ila_large chipscope_ila
-  (
-    .CONTROL(CONTROL), .CLK(clk),
-    .DATA(DATA), .TRIG0(TRIG)
-  );
+  // chipscope_icon chipscope_icon(.CONTROL0(CONTROL));
+  // chipscope_ila_large chipscope_ila
+  // (
+  //   .CONTROL(CONTROL), .CLK(clk),
+  //   .DATA(DATA), .TRIG0(TRIG)
+  // );
 
   //------------------------------------------------------------------
   // control logic reachable via AXI slave
@@ -288,12 +295,45 @@ module accelerator
     .get_data(get_data_s2h),
     .get_addr(get_addr),
 
-    .stream_select(1'b0),
-    .stream_valid(1'b1),
+    .stream_select(s2h_tdest),
+    .stream_valid(1'b1)
 
-    .debug(DATA[183:120])
+    //.debug(DATA[183:120])
   );
 
+
+  // Generate TDEST signals
+  wire                          h2s_dest_tvalid;
+  wire                          h2s_dest_tready;
+  wire [C_AXIS_TDEST_WIDTH-1:0] h2s_dest_tdata;
+
+  // AXI stream to custom hardware cut
+  wire [C_AXIS_DATA_WIDTH-1:0]  h2s_tdata_cut;
+  wire                          h2s_tlast_cut;
+  wire                          h2s_tvalid_cut;
+  wire                          h2s_tready_cut;
+  wire [C_AXIS_TDEST_WIDTH-1:0] h2s_tdest_cut;
+
+  axi4_stream_dest_generator dest_gen0
+  (
+    .clk(clk), .rst(rst),
+    .S_AXIS_DEST_TVALID(h2s_dest_tvalid),
+    .S_AXIS_DEST_TREADY(h2s_dest_tready),
+    .S_AXIS_DEST_TDATA(h2s_dest_tdata),
+
+    .S_AXIS_TVALID(h2s_tvalid),
+    .S_AXIS_TREADY(h2s_tready),
+    .S_AXIS_TDATA(h2s_tdata),
+    .S_AXIS_TLAST(h2s_tlast),
+
+    .M_AXIS_TVALID(h2s_tvalid_cut),
+    .M_AXIS_TREADY(h2s_tready_cut),
+    .M_AXIS_TDATA(h2s_tdata_cut),
+    .M_AXIS_TLAST(h2s_tlast_cut),
+    .M_AXIS_TDEST(h2s_tdest_cut)
+
+    //.debug(DATA[977:850])
+  );
 
   // AXI 4 stream master to handle host to accelerator
   axi4_stream_master #
@@ -316,6 +356,10 @@ module accelerator
     .S_AXIS_STS_TREADY(h2s_sts_tready),
     .S_AXIS_STS_TDATA(h2s_sts_tdata),
 
+    .M_AXIS_DEST_TVALID(h2s_dest_tvalid),
+    .M_AXIS_DEST_TREADY(h2s_dest_tready),
+    .M_AXIS_DEST_TDATA(h2s_dest_tdata),
+
     .set_data(set_data),
     .set_addr(set_addr),
     .set_stb(set_stb_h2s),
@@ -324,9 +368,9 @@ module accelerator
     .get_addr(get_addr),
 
     .stream_select(which_stream_h2s),
-    .stream_valid(1'b1),
+    .stream_valid(1'b1)
 
-    .debug(DATA[283:220])
+    //.debug(DATA[283:220])
   );
 
   wire [14:0] loopback_count;
@@ -382,36 +426,243 @@ module accelerator
 
   assign TRIG[2]       = M_AXI_WVALID;
 
-  xlnx_axi_fifo loopback_fifo
+
+
+
+  ////////////////////////////////////////
+  // interconnect stuff
+  ////////////////////////////////////////
+
+  // slave0
+  wire [C_AXIS_DATA_WIDTH-1:0]  stream0_slave_tdata;
+  wire                          stream0_slave_tvalid;
+  wire                          stream0_slave_tready;
+  wire                          stream0_slave_tlast;
+  wire [C_AXIS_TDEST_WIDTH-1:0] stream0_slave_tdest;
+
+  // slave1
+  wire [C_AXIS_DATA_WIDTH-1:0]  stream1_slave_tdata;
+  wire                          stream1_slave_tvalid;
+  wire                          stream1_slave_tready;
+  wire                          stream1_slave_tlast;
+  wire [C_AXIS_TDEST_WIDTH-1:0] stream1_slave_tdest;
+
+  // slave2
+  wire [C_AXIS_DATA_WIDTH-1:0]  stream2_slave_tdata;
+  wire                          stream2_slave_tvalid;
+  wire                          stream2_slave_tready;
+  wire                          stream2_slave_tlast;
+  wire [C_AXIS_TDEST_WIDTH-1:0] stream2_slave_tdest;
+
+  // slave3
+  wire [C_AXIS_DATA_WIDTH-1:0]  stream3_slave_tdata;
+  wire                          stream3_slave_tvalid;
+  wire                          stream3_slave_tready;
+  wire                          stream3_slave_tlast;
+  wire [C_AXIS_TDEST_WIDTH-1:0] stream3_slave_tdest;
+
+
+  // master 0
+  wire [C_AXIS_DATA_WIDTH-1:0]  stream0_master_tdata;
+  wire                          stream0_master_tvalid;
+  wire                          stream0_master_tready;
+  wire                          stream0_master_tlast;
+  wire [C_AXIS_TDEST_WIDTH-1:0] stream0_master_tdest;
+
+  // master 1
+  wire [C_AXIS_DATA_WIDTH-1:0]  stream1_master_tdata;
+  wire                          stream1_master_tvalid;
+  wire                          stream1_master_tready;
+  wire                          stream1_master_tlast;
+  wire [C_AXIS_TDEST_WIDTH-1:0] stream1_master_tdest;
+
+  // master 2
+  wire [C_AXIS_DATA_WIDTH-1:0]  stream2_master_tdata;
+  wire                          stream2_master_tvalid;
+  wire                          stream2_master_tready;
+  wire                          stream2_master_tlast;
+  wire [C_AXIS_TDEST_WIDTH-1:0] stream2_master_tdest;
+
+  // master 3
+  wire [C_AXIS_DATA_WIDTH-1:0]  stream3_master_tdata;
+  wire                          stream3_master_tvalid;
+  wire                          stream3_master_tready;
+  wire                          stream3_master_tlast;
+  wire [C_AXIS_TDEST_WIDTH-1:0] stream3_master_tdest;
+
+
+
+  // TODO: Fix this
+  // assign stream2_master_tready = 1'h1;
+  assign stream3_master_tready = 1'h1;
+
+
+  xlnx_axis_demux demux0
   (
-   .s_aclk(clk), .s_aresetn(rst_n && soft_reset_n),
-   .s_axis_tvalid(h2s_tvalid),
-   .s_axis_tready(h2s_tready),
-   .s_axis_tdata(h2s_tdata),
-   .s_axis_tlast(h2s_tlast),
-   .m_axis_tvalid(s2h_tvalid),
-   .m_axis_tready(s2h_tready),
-   .m_axis_tdata(s2h_tdata),
-   .m_axis_tlast(s2h_tlast),
+    .ACLK(clk),
+    .ARESETN(rst_n && soft_reset_n),
+    .S00_AXIS_ACLK(clk),
+    .S00_AXIS_ARESETN(rst_n && soft_reset_n),
+    .S00_AXIS_TVALID(h2s_tvalid_cut),
+    .S00_AXIS_TREADY(h2s_tready_cut),
+    .S00_AXIS_TDATA(h2s_tdata_cut),
+    .S00_AXIS_TLAST(h2s_tlast_cut),
+    .S00_AXIS_TDEST(h2s_tdest_cut),
+
+    .M00_AXIS_ACLK(clk),
+    .M01_AXIS_ACLK(clk),
+    .M02_AXIS_ACLK(clk),
+    .M03_AXIS_ACLK(clk),
+    .M00_AXIS_ARESETN(rst_n && soft_reset_n),
+    .M01_AXIS_ARESETN(rst_n && soft_reset_n),
+    .M02_AXIS_ARESETN(rst_n && soft_reset_n),
+    .M03_AXIS_ARESETN(rst_n && soft_reset_n),
+
+    .M00_AXIS_TVALID(stream0_master_tvalid),
+    .M01_AXIS_TVALID(stream1_master_tvalid),
+    .M02_AXIS_TVALID(stream2_master_tvalid),
+    .M03_AXIS_TVALID(stream3_master_tvalid),
+    .M00_AXIS_TREADY(stream0_master_tready),
+    .M01_AXIS_TREADY(stream1_master_tready),
+    .M02_AXIS_TREADY(stream2_master_tready),
+    .M03_AXIS_TREADY(stream3_master_tready),
+    .M00_AXIS_TDATA(stream0_master_tdata),
+    .M01_AXIS_TDATA(stream1_master_tdata),
+    .M02_AXIS_TDATA(stream2_master_tdata),
+    .M03_AXIS_TDATA(stream3_master_tdata),
+    .M00_AXIS_TLAST(stream0_master_tlast),
+    .M01_AXIS_TLAST(stream1_master_tlast),
+    .M02_AXIS_TLAST(stream2_master_tlast),
+    .M03_AXIS_TLAST(stream3_master_tlast),
+    .M00_AXIS_TDEST(stream0_master_tdest),
+    .M01_AXIS_TDEST(stream1_master_tdest),
+    .M02_AXIS_TDEST(stream2_master_tdest),
+    .M03_AXIS_TDEST(stream3_master_tdest),
+    .S00_DECODE_ERR()
+  );
+
+  // TODO: Fix this
+  assign stream0_slave_tdest = stream0_master_tdest; //2'b00;
+  assign stream1_slave_tdest = stream1_master_tdest; //2'b01;
+  assign stream2_slave_tdest = stream2_master_tdest; //2'b10;
+  assign stream3_slave_tdest = stream3_master_tdest; //2'b11;
+
+  xlnx_axis_mux mux0
+  (
+    .ACLK(clk),
+    .ARESETN(rst_n && soft_reset_n),
+    .S00_AXIS_ACLK(clk),
+    .S01_AXIS_ACLK(clk),
+    .S02_AXIS_ACLK(clk),
+    .S03_AXIS_ACLK(clk),
+    .S00_AXIS_ARESETN(rst_n && soft_reset_n),
+    .S01_AXIS_ARESETN(rst_n && soft_reset_n),
+    .S02_AXIS_ARESETN(rst_n && soft_reset_n),
+    .S03_AXIS_ARESETN(rst_n && soft_reset_n),
+    .S00_AXIS_TVALID(stream0_slave_tvalid),
+    .S01_AXIS_TVALID(stream1_slave_tvalid),
+    .S02_AXIS_TVALID(stream2_slave_tvalid),
+    .S03_AXIS_TVALID(stream3_slave_tvalid),
+    .S00_AXIS_TREADY(stream0_slave_tready),
+    .S01_AXIS_TREADY(stream1_slave_tready),
+    .S02_AXIS_TREADY(stream2_slave_tready),
+    .S03_AXIS_TREADY(stream3_slave_tready),
+    .S00_AXIS_TDATA(stream0_slave_tdata),
+    .S01_AXIS_TDATA(stream1_slave_tdata),
+    .S02_AXIS_TDATA(stream2_slave_tdata),
+    .S03_AXIS_TDATA(stream3_slave_tdata),
+    .S00_AXIS_TLAST(stream0_slave_tlast),
+    .S01_AXIS_TLAST(stream1_slave_tlast),
+    .S02_AXIS_TLAST(stream2_slave_tlast),
+    .S03_AXIS_TLAST(stream3_slave_tlast),
+    .S00_AXIS_TDEST(stream0_slave_tdest),
+    .S01_AXIS_TDEST(stream1_slave_tdest),
+    .S02_AXIS_TDEST(stream2_slave_tdest),
+    .S03_AXIS_TDEST(stream3_slave_tdest),
+    .M00_AXIS_ACLK(clk),
+    .M00_AXIS_ARESETN(rst_n && soft_reset_n),
+    .M00_AXIS_TVALID(s2h_tvalid),
+    .M00_AXIS_TREADY(s2h_tready),
+    .M00_AXIS_TDATA(s2h_tdata),
+    .M00_AXIS_TLAST(s2h_tlast),
+    .M00_AXIS_TDEST(s2h_tdest),
+    .S00_ARB_REQ_SUPPRESS(1'h0),
+    .S01_ARB_REQ_SUPPRESS(1'h0),
+    .S02_ARB_REQ_SUPPRESS(1'h0),
+    .S03_ARB_REQ_SUPPRESS(1'h0),
+    .S00_DECODE_ERR(),
+    .S01_DECODE_ERR(),
+    .S02_DECODE_ERR(),
+    .S03_DECODE_ERR()
+  );
+
+  /*xlnx_axi_fifo loopback_fifo0
+  (
+   .s_aclk(clk),
+   .s_aresetn(rst_n && soft_reset_n),
+   .s_axis_tvalid(stream0_master_tvalid),
+   .s_axis_tready(stream0_master_tready),
+   .s_axis_tdata(stream0_master_tdata),
+   .s_axis_tlast(stream0_master_tlast),
+   .s_axis_tdest(stream0_master_tdest),
+   .m_axis_tvalid(stream0_slave_tvalid),
+   .m_axis_tready(stream0_slave_tready),
+   .m_axis_tdata(stream0_slave_tdata),
+   .m_axis_tlast(stream0_slave_tlast),
+   .m_axis_tdest(stream0_slave_tdest),
    .axis_data_count(loopback_count)
   );
 
-  // hook up debug to loopback fifo in and out
-  assign DATA[775:712] = h2s_tdata;
-  assign DATA[776]     = h2s_tvalid;
-  assign DATA[777]     = h2s_tready;
-  assign DATA[778]     = h2s_tlast;
+  xlnx_axi_fifo loopback_fifo1
+  (
+   .s_aclk(clk),
+   .s_aresetn(rst_n && soft_reset_n),
+   .s_axis_tvalid(stream1_master_tvalid),
+   .s_axis_tready(stream1_master_tready),
+   .s_axis_tdata(stream1_master_tdata),
+   .s_axis_tlast(stream1_master_tlast),
+   .s_axis_tdest(stream1_master_tdest),
+   .m_axis_tvalid(stream1_slave_tvalid),
+   .m_axis_tready(stream1_slave_tready),
+   .m_axis_tdata(stream1_slave_tdata),
+   .m_axis_tlast(stream1_slave_tlast),
+   .m_axis_tdest()
+  ); */
 
-  assign DATA[842:779] = s2h_tdata;
-  assign DATA[843]     = s2h_tvalid;
-  assign DATA[844]     = s2h_tready;
-  assign DATA[845]     = s2h_tlast;
+  wire [31:0] stream0_master_tdata_trunc = stream0_master_tdata[31:0];
+  wire [ 7:0] stream1_master_tdata_trunc = stream1_master_tdata[ 7:0];
+  wire [31:0] stream2_master_tdata_trunc = stream2_master_tdata[31:0];
 
-  assign DATA[846]     = s2h_tvalid_int;
-  assign DATA[847]     = s2h_tready_int;
+  fir_filter fir_filter (
+    .aresetn(rst_n && soft_reset_n),                  // input aresetn
+    .aclk(clk),                                       // input aclk
+    .s_axis_data_tvalid(stream0_master_tvalid),       // input s_axis_data_tvalid
+    .s_axis_data_tready(stream0_master_tready),       // output s_axis_data_tready
+    .s_axis_data_tlast(stream0_master_tlast),         // input s_axis_data_tlast
+    .s_axis_data_tdata(stream0_master_tdata_trunc),   // input [31 : 0] s_axis_data_tdata
+    .s_axis_config_tvalid(stream1_master_tvalid),     // input s_axis_config_tvalid
+    .s_axis_config_tready(stream1_master_tready),     // output s_axis_config_tready
+    .s_axis_config_tdata(stream1_master_tdata_trunc), // input [7 : 0] s_axis_config_tdata
+    .s_axis_reload_tvalid(stream2_master_tvalid),     // input s_axis_reload_tvalid
+    .s_axis_reload_tready(stream2_master_tready),     // output s_axis_reload_tready
+    .s_axis_reload_tlast(stream2_master_tlast),       // input s_axis_reload_tlast
+    .s_axis_reload_tdata(stream2_master_tdata_trunc), // input [31 : 0] s_axis_reload_tdata
+    .m_axis_data_tvalid(stream0_slave_tvalid),        // output m_axis_data_tvalid
+    .m_axis_data_tready(stream0_slave_tready),        // input m_axis_data_tready
+    .m_axis_data_tlast(stream0_slave_tlast),          // output m_axis_data_tlast
+    .m_axis_data_tdata(stream0_slave_tdata),          // output [63 : 0] m_axis_data_tdata
+    .event_s_reload_tlast_missing(),                  // output event_s_reload_tlast_missing
+    .event_s_reload_tlast_unexpected());              // output event_s_reload_tlast_unexpected
 
+  assign stream1_slave_tvalid = 1'b0;
+  assign stream1_slave_tlast = 1'b0;
+  assign stream1_slave_tdata = 64'd0;
+  assign stream2_slave_tvalid = 1'b0;
+  assign stream2_slave_tlast = 1'b0;
+  assign stream2_slave_tdata = 64'd0;
 
-  xlnx_axi_datamover datamover (
+  xlnx_axi_datamover datamover
+  (
 
     // AXI stream to custom hardware reset
     .m_axi_mm2s_aclk(clk),
@@ -517,12 +768,54 @@ module accelerator
     .s_axis_s2mm_tdata(s2h_tdata), // TODO flip?!
     .s_axis_s2mm_tkeep(8'hff), // keep 'em all
     .s_axis_s2mm_tlast(s2h_tlast),
-    .s_axis_s2mm_tvalid(s2h_tvalid_int),
-    .s_axis_s2mm_tready(s2h_tready_int),
+    //.s_axis_s2mm_tvalid(s2h_tvalid_int),
+    .s_axis_s2mm_tvalid(s2h_tvalid),
+    //.s_axis_s2mm_tready(s2h_tready_int),
+    .s_axis_s2mm_tready(s2h_tready),
 
     // we're not using debug
     .s2mm_dbg_sel(4'b0),
     .s2mm_dbg_data()
   );
+
+  // hook up debug to loopback fifo in and out
+  assign DATA[775:712] = h2s_tdata;
+  assign DATA[776]     = h2s_tvalid;
+  assign DATA[777]     = h2s_tready;
+  assign DATA[778]     = h2s_tlast;
+
+  assign DATA[842:779] = s2h_tdata;
+  assign DATA[843]     = s2h_tvalid;
+  assign DATA[844]     = s2h_tready;
+  assign DATA[845]     = s2h_tlast;
+
+  //assign DATA[846]     = s2h_tvalid_int;
+  //assign DATA[847]     = s2h_tready_int;
+  assign DATA[849:848]     = s2h_tdest;
+  assign DATA[851:850]     = h2s_tdest_cut;
+
+  assign DATA[852] = stream0_slave_tvalid;
+  assign DATA[853] = stream0_slave_tready;
+  assign DATA[854] = stream0_slave_tlast;
+  assign DATA[918:855] = stream0_slave_tdata;
+
+  assign DATA[919] = stream0_master_tvalid;
+  assign DATA[920] = stream0_master_tready;
+  assign DATA[921] = stream0_master_tlast;
+  assign DATA[985:922] = stream0_master_tdata;
+
+  assign DATA[986] = stream1_master_tvalid;
+  assign DATA[987] = stream1_master_tready;
+  assign DATA[988] = stream1_master_tlast;
+  assign DATA[1052:989] = stream1_master_tdata;
+  assign DATA[1054:1053] = stream0_slave_tdest;
+  assign DATA[1056:1055] = stream0_master_tdest;
+  assign DATA[1058:1057] = stream1_master_tdest;
+  assign DATA[1060:1059] = stream1_slave_tdest;
+
+  assign DATA[1061] = stream1_slave_tvalid;
+  assign DATA[1062] = stream1_slave_tready;
+  assign DATA[1063] = stream1_slave_tlast;
+  assign DATA[1127:1064] = stream1_slave_tdata;
 
 endmodule

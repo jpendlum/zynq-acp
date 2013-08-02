@@ -38,6 +38,10 @@ module axi4_stream_master
   output                                    S_AXIS_STS_TREADY,
   input [C_M_AXIS_STS_DATA_WIDTH-1:0]       S_AXIS_STS_TDATA,
 
+  output                                    M_AXIS_DEST_TVALID,
+  input                                     M_AXIS_DEST_TREADY,
+  output [C_STREAMS_WIDTH-1:0]              M_AXIS_DEST_TDATA,
+
   input [C_S_AXI_DATA_WIDTH-1:0]            set_data,
   input [C_S_AXI_ADDR_WIDTH-1:0]            set_addr,
   input                                     set_stb,
@@ -113,6 +117,8 @@ module axi4_stream_master
   assign M_AXIS_CMD_TVALID = do_cmd && cmd_tvalid_muxed[current_stream];
   assign S_AXIS_STS_TREADY = do_sts && sts_tready_muxed[current_stream];
 
+  assign M_AXIS_DEST_TVALID = do_cmd && cmd_tvalid_muxed[current_stream];
+  assign M_AXIS_DEST_TDATA  = current_stream;
 
   wire [32:0] dbg [NUM_STREAMS-1:0];
 
@@ -203,7 +209,7 @@ module axi4_stream_master
 
     xlnx_axi_fifo8 sts_fifo
     (
-      .s_aclk(clk), .s_aresetn(!rst),
+      .s_aclk(clk), .s_aresetn(!rst && !write_clear),
       .s_axis_tvalid(write_sts || dm_sts_tvalid),
       .s_axis_tready(sts_tready_muxed[m]),
       .s_axis_tdata(write_sts ? set_data[C_M_AXIS_STS_DATA_WIDTH-1:0] : S_AXIS_STS_TDATA),
@@ -220,5 +226,6 @@ module axi4_stream_master
 
   assign debug [32:0]  = dbg[0];
   assign debug [34:33] = state;
+  assign debug [36:35] = stream_select;
 
 endmodule
