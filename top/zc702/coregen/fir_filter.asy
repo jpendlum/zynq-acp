@@ -16,7 +16,7 @@ PINATTR PinName s_axis_data_tlast
 PINATTR Polarity IN
 LINE Wide 0 208 32 208
 PIN 0 208 LEFT 36
-PINATTR PinName s_axis_data_tdata[31:0]
+PINATTR PinName s_axis_data_tdata[63:0]
 PINATTR Polarity IN
 LINE Normal 0 240 32 240
 PIN 0 240 LEFT 36
@@ -68,7 +68,7 @@ PINATTR PinName m_axis_data_tlast
 PINATTR Polarity OUT
 LINE Wide 1056 208 1024 208
 PIN 1056 208 RIGHT 36
-PINATTR PinName m_axis_data_tdata[63:0]
+PINATTR PinName m_axis_data_tdata[79:0]
 PINATTR Polarity OUT
 LINE Normal 1056 400 1024 400
 PIN 1056 400 RIGHT 36

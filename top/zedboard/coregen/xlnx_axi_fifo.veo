@@ -64,11 +64,15 @@ xlnx_axi_fifo your_instance_name (
   .s_axis_tready(s_axis_tready), // output s_axis_tready
   .s_axis_tdata(s_axis_tdata), // input [63 : 0] s_axis_tdata
   .s_axis_tlast(s_axis_tlast), // input s_axis_tlast
+  .s_axis_tdest(s_axis_tdest), // input [1 : 0] s_axis_tdest
   .m_axis_tvalid(m_axis_tvalid), // output m_axis_tvalid
   .m_axis_tready(m_axis_tready), // input m_axis_tready
   .m_axis_tdata(m_axis_tdata), // output [63 : 0] m_axis_tdata
   .m_axis_tlast(m_axis_tlast), // output m_axis_tlast
-  .axis_data_count(axis_data_count) // output [14 : 0] axis_data_count
+  .m_axis_tdest(m_axis_tdest), // output [1 : 0] m_axis_tdest
+  .axis_data_count(axis_data_count), // output [12 : 0] axis_data_count
+  .axis_overflow(axis_overflow), // output axis_overflow
+  .axis_underflow(axis_underflow) // output axis_underflow
 );
 // INST_TAG_END ------ End INSTANTIATION Template ---------
 

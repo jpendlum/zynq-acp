@@ -202,11 +202,15 @@ PACKAGE xlnx_axi_fifo_pkg IS
            M_AXIS_TREADY             : IN  std_logic;
            M_AXIS_TDATA              : OUT std_logic_vector(64-1 DOWNTO 0);
            M_AXIS_TLAST              : OUT std_logic;
+           M_AXIS_TDEST              : OUT std_logic_vector(2-1 DOWNTO 0);
            S_AXIS_TVALID             : IN  std_logic;
            S_AXIS_TREADY             : OUT std_logic;
            S_AXIS_TDATA              : IN  std_logic_vector(64-1 DOWNTO 0);
            S_AXIS_TLAST              : IN  std_logic;
-           AXIS_DATA_COUNT           : OUT std_logic_vector(14 DOWNTO 0);
+           S_AXIS_TDEST              : IN  std_logic_vector(2-1 DOWNTO 0);
+           AXIS_DATA_COUNT           : OUT std_logic_vector(12 DOWNTO 0);
+           AXIS_OVERFLOW             : OUT std_logic;
+           AXIS_UNDERFLOW            : OUT std_logic;
            S_ACLK                    : IN  std_logic);
 
  END COMPONENT;

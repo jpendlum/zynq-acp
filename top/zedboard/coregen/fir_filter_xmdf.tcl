@@ -79,6 +79,10 @@ utilities_xmdf::xmdfSetData $instance FileSet $fcount relative_path fir_filter.n
 utilities_xmdf::xmdfSetData $instance FileSet $fcount type ngc
 incr fcount
 
+utilities_xmdf::xmdfSetData $instance FileSet $fcount relative_path fir_filter.sym
+utilities_xmdf::xmdfSetData $instance FileSet $fcount type symbol
+incr fcount
+
 utilities_xmdf::xmdfSetData $instance FileSet $fcount relative_path fir_filter.v
 utilities_xmdf::xmdfSetData $instance FileSet $fcount type verilog
 incr fcount

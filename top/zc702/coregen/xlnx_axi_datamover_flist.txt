@@ -101,6 +101,7 @@ xlnx_axi_datamover/hdl/src/vhdl/sync_fifo_fg.vhd
 xlnx_axi_datamover/hdl/src/vhdl/valid_be.vhd
 xlnx_axi_datamover.asy
 xlnx_axi_datamover.gise
+xlnx_axi_datamover.sym
 xlnx_axi_datamover.veo
 xlnx_axi_datamover.xco
 xlnx_axi_datamover.xise

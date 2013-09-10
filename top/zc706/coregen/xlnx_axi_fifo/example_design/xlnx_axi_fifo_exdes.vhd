@@ -84,7 +84,9 @@ entity xlnx_axi_fifo_exdes is
            S_AXIS_TDATA              : IN  std_logic_vector(64-1 DOWNTO 0);
            S_AXIS_TLAST              : IN  std_logic;
            S_AXIS_TDEST              : IN  std_logic_vector(2-1 DOWNTO 0);
-           AXIS_DATA_COUNT           : OUT std_logic_vector(14 DOWNTO 0);
+           AXIS_DATA_COUNT           : OUT std_logic_vector(12 DOWNTO 0);
+           AXIS_OVERFLOW             : OUT std_logic;
+           AXIS_UNDERFLOW            : OUT std_logic;
            S_ACLK                    : IN  std_logic);
 
 end xlnx_axi_fifo_exdes;
@@ -110,7 +112,9 @@ architecture xilinx of xlnx_axi_fifo_exdes is
            S_AXIS_TDATA              : IN  std_logic_vector(64-1 DOWNTO 0);
            S_AXIS_TLAST              : IN  std_logic;
            S_AXIS_TDEST              : IN  std_logic_vector(2-1 DOWNTO 0);
-           AXIS_DATA_COUNT           : OUT std_logic_vector(14 DOWNTO 0);
+           AXIS_DATA_COUNT           : OUT std_logic_vector(12 DOWNTO 0);
+           AXIS_OVERFLOW             : OUT std_logic;
+           AXIS_UNDERFLOW            : OUT std_logic;
            S_ACLK                    : IN  std_logic);
 
   end component;
@@ -139,6 +143,8 @@ begin
            S_AXIS_TLAST              => s_axis_tlast,
            S_AXIS_TDEST              => s_axis_tdest,
            AXIS_DATA_COUNT           => axis_data_count,
+           AXIS_OVERFLOW             => axis_overflow,
+           AXIS_UNDERFLOW            => axis_underflow,
            S_ACLK                    => s_aclk_i);
 
 end xilinx;

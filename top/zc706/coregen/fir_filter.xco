@@ -1,7 +1,7 @@
 ##############################################################
 #
 # Xilinx Core Generator version 14.6
-# Date: Tue Jul  9 16:38:57 2013
+# Date: Fri Aug 30 00:41:16 2013
 #
 ##############################################################
 #
@@ -44,15 +44,15 @@ CSET channel_sequence=Basic
 CSET clock_frequency=300.0
 CSET coefficient_buffer_type=Automatic
 CSET coefficient_file=no_coe_file_loaded
-CSET coefficient_fractional_bits=0
+CSET coefficient_fractional_bits=31
 CSET coefficient_reload=true
 CSET coefficient_sets=1
 CSET coefficient_sign=Signed
 CSET coefficient_structure=Inferred
 CSET coefficient_width=32
 CSET coefficientsource=Vector
-CSET coefficientvector=6,0,-4,-3,5,6,-6,-13,7,44,64,44,7,-13,-6,6,5,-3,-4,0,6
-CSET columnconfig=11
+CSET coefficientvector=-0.001556396484375,-0.020202636718750,-0.005798339843750,0.015563964843750,0.000366210937500,-0.021942138671875,0.007263183593750,0.028839111328125,-0.020477294921875,-0.035430908203125,0.043884277343750,0.040924072265625,-0.093383789062500,-0.044555664062500,0.313934326171875,0.545837402343750,0.313934326171875,-0.044555664062500,-0.093383789062500,0.040924072265625,0.043884277343750,-0.035430908203125,-0.020477294921875,0.028839111328125,0.007263183593750,-0.021942138671875,0.000366210937500,0.015563964843750,-0.005798339843750,-0.020202636718750,-0.001556396484375
+CSET columnconfig=16
 CSET component_name=fir_filter
 CSET data_buffer_type=Automatic
 CSET data_fractional_bits=0
@@ -80,16 +80,16 @@ CSET m_data_has_tuser=Not_Required
 CSET multi_column_support=Automatic
 CSET num_reload_slots=1
 CSET number_channels=1
-CSET number_paths=1
+CSET number_paths=2
 CSET optimization_goal=Area
 CSET output_buffer_type=Automatic
 CSET output_rounding_mode=Convergent_Rounding_to_Even
-CSET output_width=64
+CSET output_width=38
 CSET passband_max=0.5
 CSET passband_min=0.0
 CSET pattern_list=P4-0,P4-1,P4-2,P4-3,P4-4
 CSET preference_for_other_storage=Automatic
-CSET quantization=Integer_Coefficients
+CSET quantization=Quantize_Only
 CSET rate_change_type=Integer
 CSET ratespecification=Sample_Period
 CSET reload_file=no_coe_file_loaded
@@ -109,4 +109,4 @@ CSET zero_pack_factor=1
 MISC pkg_timestamp=2012-11-05T14:55:01Z
 # END Extra information
 GENERATE
-# CRC: bd59a357
+# CRC: fefe77bb

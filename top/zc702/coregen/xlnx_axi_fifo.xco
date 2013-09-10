@@ -1,7 +1,7 @@
 ##############################################################
 #
-# Xilinx Core Generator version 14.5
-# Date: Mon Jun 10 17:35:23 2013
+# Xilinx Core Generator version 14.6
+# Date: Fri Aug 30 22:42:08 2013
 #
 ##############################################################
 #
@@ -58,7 +58,7 @@ CSET disable_timing_violations=false
 CSET disable_timing_violations_axi=false
 CSET dout_reset_value=0
 CSET empty_threshold_assert_value=2
-CSET empty_threshold_assert_value_axis=16382
+CSET empty_threshold_assert_value_axis=4094
 CSET empty_threshold_assert_value_rach=14
 CSET empty_threshold_assert_value_rdch=1022
 CSET empty_threshold_assert_value_wach=14
@@ -88,7 +88,7 @@ CSET enable_read_pointer_increment_by2=false
 CSET enable_reset_synchronization=true
 CSET enable_ruser=false
 CSET enable_tdata=true
-CSET enable_tdest=false
+CSET enable_tdest=true
 CSET enable_tid=false
 CSET enable_tkeep=false
 CSET enable_tlast=true
@@ -112,7 +112,7 @@ CSET fifo_implementation_wdch=Common_Clock_Block_RAM
 CSET fifo_implementation_wrch=Common_Clock_Distributed_RAM
 CSET full_flags_reset_value=1
 CSET full_threshold_assert_value=1022
-CSET full_threshold_assert_value_axis=16383
+CSET full_threshold_assert_value_axis=4095
 CSET full_threshold_assert_value_rach=15
 CSET full_threshold_assert_value_rdch=1023
 CSET full_threshold_assert_value_wach=15
@@ -136,7 +136,7 @@ CSET inject_sbit_error_wdch=false
 CSET inject_sbit_error_wrch=false
 CSET input_data_width=18
 CSET input_depth=1024
-CSET input_depth_axis=16384
+CSET input_depth_axis=4096
 CSET input_depth_rach=16
 CSET input_depth_rdch=1024
 CSET input_depth_wach=16
@@ -146,7 +146,7 @@ CSET interface_type=AXI4
 CSET output_data_width=18
 CSET output_depth=1024
 CSET overflow_flag=false
-CSET overflow_flag_axi=false
+CSET overflow_flag_axi=true
 CSET overflow_sense=Active_High
 CSET overflow_sense_axi=Active_High
 CSET performance_options=Standard_FIFO
@@ -181,13 +181,13 @@ CSET ruser_width=1
 CSET synchronization_stages=2
 CSET synchronization_stages_axi=2
 CSET tdata_width=64
-CSET tdest_width=4
+CSET tdest_width=2
 CSET tid_width=8
 CSET tkeep_width=8
 CSET tstrb_width=8
 CSET tuser_width=4
 CSET underflow_flag=false
-CSET underflow_flag_axi=false
+CSET underflow_flag_axi=true
 CSET underflow_sense=Active_High
 CSET underflow_sense_axi=Active_High
 CSET use_clock_enable=false
@@ -210,4 +210,4 @@ CSET wuser_width=1
 MISC pkg_timestamp=2012-11-19T12:39:56Z
 # END Extra information
 GENERATE
-# CRC: cd87b03a
+# CRC: 4b3eba25

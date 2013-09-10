@@ -108,25 +108,14 @@ module zedboard(
     wire axi_ext_master_conn_0_S_AXI_RLAST_pin;
 
     wire [15:0] processing_system7_0_IRQ_F2P_pin;
-    //------------------------------------------------------------------
-    //-- generate clock and reset signals
-    //------------------------------------------------------------------
-    wire bus_clk;
-
-    assign bus_clk = processing_system7_0_FCLK_CLK0_pin;
-    wire reset_host = 0;
-    wire reset_global = ~processing_system7_0_FCLK_RESET0_N_pin | reset_host;
-
-    wire bus_rst;
-    reset_sync bus_sync(.clk(bus_clk), .reset_in(reset_global), .reset_out(bus_rst));
 
     //------------------------------------------------------------------
     //-- accelerator
     //------------------------------------------------------------------
     accelerator acc0
     (
-      .clk(bus_clk),
-      .rst(bus_rst),
+      .clk(processing_system7_0_FCLK_CLK0_pin),
+      .rst_n(processing_system7_0_FCLK_RESET0_N_pin),
       .S_AXI_AWADDR(axi_ext_slave_conn_0_M_AXI_AWADDR_pin),
       .S_AXI_AWVALID(axi_ext_slave_conn_0_M_AXI_AWVALID_pin),
       .S_AXI_AWREADY(axi_ext_slave_conn_0_M_AXI_AWREADY_pin),

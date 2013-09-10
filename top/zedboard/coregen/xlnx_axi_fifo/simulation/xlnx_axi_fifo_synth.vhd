@@ -92,11 +92,11 @@ ENTITY xlnx_axi_fifo_synth IS
 END ENTITY;
 
 ARCHITECTURE simulation_arch OF xlnx_axi_fifo_synth IS
-    CONSTANT TDATA_OFFSET      : INTEGER := if_then_else(1 = 1,65-64,65);
+    CONSTANT TDATA_OFFSET      : INTEGER := if_then_else(1 = 1,67-64,67);
     CONSTANT TSTRB_OFFSET      : INTEGER := if_then_else(0 = 1,TDATA_OFFSET-8,TDATA_OFFSET);
     CONSTANT TKEEP_OFFSET      : INTEGER := if_then_else(0 = 1,TSTRB_OFFSET-8,TSTRB_OFFSET);
     CONSTANT TID_OFFSET        : INTEGER := if_then_else(0 = 1,TKEEP_OFFSET-8,TKEEP_OFFSET);
-    CONSTANT TDEST_OFFSET      : INTEGER := if_then_else(0 = 1,TID_OFFSET-4,TID_OFFSET);
+    CONSTANT TDEST_OFFSET      : INTEGER := if_then_else(1 = 1,TID_OFFSET-2,TID_OFFSET);
     CONSTANT TLAST_OFFSET      : INTEGER := if_then_else(0 = 1,TDEST_OFFSET-4,TDEST_OFFSET);
 
     -- FIFO interface signal declarations
@@ -105,11 +105,15 @@ ARCHITECTURE simulation_arch OF xlnx_axi_fifo_synth IS
     SIGNAL m_axis_tready                  :   STD_LOGIC;
     SIGNAL m_axis_tdata                   :   STD_LOGIC_VECTOR(64-1 DOWNTO 0);
     SIGNAL m_axis_tlast                   :   STD_LOGIC;
+    SIGNAL m_axis_tdest                   :   STD_LOGIC_VECTOR(2-1 DOWNTO 0);
     SIGNAL s_axis_tvalid                  :   STD_LOGIC;
     SIGNAL s_axis_tready                  :   STD_LOGIC;
     SIGNAL s_axis_tdata                   :   STD_LOGIC_VECTOR(64-1 DOWNTO 0);
     SIGNAL s_axis_tlast                   :   STD_LOGIC;
-    SIGNAL axis_data_count                :   STD_LOGIC_VECTOR(14 DOWNTO 0);
+    SIGNAL s_axis_tdest                   :   STD_LOGIC_VECTOR(2-1 DOWNTO 0);
+    SIGNAL axis_data_count                :   STD_LOGIC_VECTOR(12 DOWNTO 0);
+    SIGNAL axis_overflow                  :   STD_LOGIC;
+    SIGNAL axis_underflow                 :   STD_LOGIC;
     SIGNAL s_aclk_i		          :   STD_LOGIC;
    -- TB Signals
     SIGNAL prc_we_i                       :   STD_LOGIC := '0';
@@ -121,8 +125,8 @@ ARCHITECTURE simulation_arch OF xlnx_axi_fifo_synth IS
     SIGNAL rst_s_wr3                      :   STD_LOGIC := '0';
     SIGNAL rst_s_rd                       :   STD_LOGIC := '0';
     SIGNAL reset_en                       :   STD_LOGIC := '0';
-    SIGNAL din_axis                       :   STD_LOGIC_VECTOR(65-1 DOWNTO 0);
-    SIGNAL dout_axis                      :   STD_LOGIC_VECTOR(65-1 DOWNTO 0);
+    SIGNAL din_axis                       :   STD_LOGIC_VECTOR(67-1 DOWNTO 0);
+    SIGNAL dout_axis                      :   STD_LOGIC_VECTOR(67-1 DOWNTO 0);
     SIGNAL wr_en_axis                     :   STD_LOGIC := '0';
     SIGNAL rd_en_axis                     :   STD_LOGIC := '0';
     SIGNAL full_axis                      :   STD_LOGIC := '0';
@@ -191,8 +195,8 @@ ARCHITECTURE simulation_arch OF xlnx_axi_fifo_synth IS
 
     fg_dg_axis: xlnx_axi_fifo_dgen
       GENERIC MAP (  
-          	 C_DIN_WIDTH      => 65,
-		 C_DOUT_WIDTH     => 65,
+          	 C_DIN_WIDTH      => 67,
+		 C_DOUT_WIDTH     => 67,
 		 TB_SEED          => TB_SEED, 
  		 C_CH_TYPE        => 0
                   )
@@ -207,8 +211,8 @@ ARCHITECTURE simulation_arch OF xlnx_axi_fifo_synth IS
 
    fg_dv_axis: xlnx_axi_fifo_dverif
     GENERIC MAP (  
-	       C_DOUT_WIDTH       => 65,
-	       C_DIN_WIDTH        => 65,
+	       C_DOUT_WIDTH       => 67,
+	       C_DIN_WIDTH        => 67,
 	       C_USE_EMBEDDED_REG => 0,
 	       TB_SEED            => TB_SEED, 
  	       C_CH_TYPE          => 0	 
@@ -227,10 +231,10 @@ ARCHITECTURE simulation_arch OF xlnx_axi_fifo_synth IS
     GENERIC MAP (  
               AXI_CHANNEL         => "AXI4_Stream",
               C_APPLICATION_TYPE  => 0,
-	      C_DOUT_WIDTH        => 65,
-	      C_DIN_WIDTH         => 65,
-	      C_WR_PNTR_WIDTH     => 14,
-    	      C_RD_PNTR_WIDTH     => 14,
+	      C_DOUT_WIDTH        => 67,
+	      C_DIN_WIDTH         => 67,
+	      C_WR_PNTR_WIDTH     => 12,
+    	      C_RD_PNTR_WIDTH     => 12,
  	      C_CH_TYPE           => 0,
               FREEZEON_ERROR      => FREEZEON_ERROR,
 	      TB_SEED             => TB_SEED, 
@@ -254,8 +258,10 @@ ARCHITECTURE simulation_arch OF xlnx_axi_fifo_synth IS
 	      SIM_DONE            => SIM_DONE,
 	      STATUS              => STATUS
 	    );
-       s_axis_tdata    <= din_axis(65-1 DOWNTO TDATA_OFFSET);
-       dout_axis(65-1 DOWNTO TDATA_OFFSET) <= m_axis_tdata;
+       s_axis_tdata    <= din_axis(67-1 DOWNTO TDATA_OFFSET);
+       dout_axis(67-1 DOWNTO TDATA_OFFSET) <= m_axis_tdata;
+       s_axis_tdest    <= DIN_AXIS(TID_OFFSET-1 DOWNTO TDEST_OFFSET);
+       dout_axis(TID_OFFSET-1 DOWNTO TDEST_OFFSET) <= m_axis_tdest;
        s_axis_tlast    <= din_axis(0);
        dout_axis(0)    <= m_axis_tlast;
 
@@ -266,11 +272,15 @@ ARCHITECTURE simulation_arch OF xlnx_axi_fifo_synth IS
            M_AXIS_TREADY             => m_axis_tready,
            M_AXIS_TDATA              => m_axis_tdata,
            M_AXIS_TLAST              => m_axis_tlast,
+           M_AXIS_TDEST              => m_axis_tdest,
            S_AXIS_TVALID             => s_axis_tvalid,
            S_AXIS_TREADY             => s_axis_tready,
            S_AXIS_TDATA              => s_axis_tdata,
            S_AXIS_TLAST              => s_axis_tlast,
+           S_AXIS_TDEST              => s_axis_tdest,
            AXIS_DATA_COUNT           => axis_data_count,
+           AXIS_OVERFLOW             => axis_overflow,
+           AXIS_UNDERFLOW            => axis_underflow,
            S_ACLK                    => s_aclk_i);
 
 END ARCHITECTURE;

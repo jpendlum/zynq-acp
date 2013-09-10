@@ -19,7 +19,6 @@ CUSTOM_DEFS =
 include ../Makefile.common
 
 include ../../lib/accelerator/Makefile.srcs
-include ../../lib/control/Makefile.srcs
 include zynq-ps/Makefile.srcs
 
 promgen: $(BIT_FILE)

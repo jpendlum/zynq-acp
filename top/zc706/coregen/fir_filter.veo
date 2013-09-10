@@ -67,7 +67,7 @@ fir_filter your_instance_name (
   .s_axis_data_tvalid(s_axis_data_tvalid), // input s_axis_data_tvalid
   .s_axis_data_tready(s_axis_data_tready), // output s_axis_data_tready
   .s_axis_data_tlast(s_axis_data_tlast), // input s_axis_data_tlast
-  .s_axis_data_tdata(s_axis_data_tdata), // input [31 : 0] s_axis_data_tdata
+  .s_axis_data_tdata(s_axis_data_tdata), // input [63 : 0] s_axis_data_tdata
   .s_axis_config_tvalid(s_axis_config_tvalid), // input s_axis_config_tvalid
   .s_axis_config_tready(s_axis_config_tready), // output s_axis_config_tready
   .s_axis_config_tdata(s_axis_config_tdata), // input [7 : 0] s_axis_config_tdata
@@ -78,7 +78,7 @@ fir_filter your_instance_name (
   .m_axis_data_tvalid(m_axis_data_tvalid), // output m_axis_data_tvalid
   .m_axis_data_tready(m_axis_data_tready), // input m_axis_data_tready
   .m_axis_data_tlast(m_axis_data_tlast), // output m_axis_data_tlast
-  .m_axis_data_tdata(m_axis_data_tdata), // output [63 : 0] m_axis_data_tdata
+  .m_axis_data_tdata(m_axis_data_tdata), // output [79 : 0] m_axis_data_tdata
   .event_s_reload_tlast_missing(event_s_reload_tlast_missing), // output event_s_reload_tlast_missing
   .event_s_reload_tlast_unexpected(event_s_reload_tlast_unexpected) // output event_s_reload_tlast_unexpected
 );

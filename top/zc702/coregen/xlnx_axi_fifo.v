@@ -43,11 +43,15 @@ module xlnx_axi_fifo(
   s_axis_tready,
   s_axis_tdata,
   s_axis_tlast,
+  s_axis_tdest,
   m_axis_tvalid,
   m_axis_tready,
   m_axis_tdata,
   m_axis_tlast,
-  axis_data_count
+  m_axis_tdest,
+  axis_data_count,
+  axis_overflow,
+  axis_underflow
 );
 
 input s_aclk;
@@ -56,11 +60,15 @@ input s_axis_tvalid;
 output s_axis_tready;
 input [63 : 0] s_axis_tdata;
 input s_axis_tlast;
+input [1 : 0] s_axis_tdest;
 output m_axis_tvalid;
 input m_axis_tready;
 output [63 : 0] m_axis_tdata;
 output m_axis_tlast;
-output [14 : 0] axis_data_count;
+output [1 : 0] m_axis_tdest;
+output [12 : 0] axis_data_count;
+output axis_overflow;
+output axis_underflow;
 
 // synthesis translate_off
 
@@ -82,7 +90,7 @@ output [14 : 0] axis_data_count;
     .C_AXI_TYPE(0),
     .C_AXI_WUSER_WIDTH(1),
     .C_AXIS_TDATA_WIDTH(64),
-    .C_AXIS_TDEST_WIDTH(4),
+    .C_AXIS_TDEST_WIDTH(2),
     .C_AXIS_TID_WIDTH(8),
     .C_AXIS_TKEEP_WIDTH(8),
     .C_AXIS_TSTRB_WIDTH(8),
@@ -93,7 +101,7 @@ output [14 : 0] axis_data_count;
     .C_DATA_COUNT_WIDTH(10),
     .C_DEFAULT_VALUE("BlankString"),
     .C_DIN_WIDTH(18),
-    .C_DIN_WIDTH_AXIS(65),
+    .C_DIN_WIDTH_AXIS(67),
     .C_DIN_WIDTH_RACH(32),
     .C_DIN_WIDTH_RDCH(64),
     .C_DIN_WIDTH_WACH(32),
@@ -122,7 +130,7 @@ output [14 : 0] axis_data_count;
     .C_HAS_AXI_WR_CHANNEL(0),
     .C_HAS_AXI_WUSER(0),
     .C_HAS_AXIS_TDATA(1),
-    .C_HAS_AXIS_TDEST(0),
+    .C_HAS_AXIS_TDEST(1),
     .C_HAS_AXIS_TID(0),
     .C_HAS_AXIS_TKEEP(0),
     .C_HAS_AXIS_TLAST(1),
@@ -140,7 +148,7 @@ output [14 : 0] axis_data_count;
     .C_HAS_INT_CLK(0),
     .C_HAS_MASTER_CE(0),
     .C_HAS_MEMINIT_FILE(0),
-    .C_HAS_OVERFLOW(0),
+    .C_HAS_OVERFLOW(1),
     .C_HAS_PROG_FLAGS_AXIS(0),
     .C_HAS_PROG_FLAGS_RACH(0),
     .C_HAS_PROG_FLAGS_RDCH(0),
@@ -152,7 +160,7 @@ output [14 : 0] axis_data_count;
     .C_HAS_RST(1),
     .C_HAS_SLAVE_CE(0),
     .C_HAS_SRST(0),
-    .C_HAS_UNDERFLOW(0),
+    .C_HAS_UNDERFLOW(1),
     .C_HAS_VALID(0),
     .C_HAS_WR_ACK(0),
     .C_HAS_WR_DATA_COUNT(0),
@@ -175,7 +183,7 @@ output [14 : 0] axis_data_count;
     .C_PRELOAD_REGS(0),
     .C_PRIM_FIFO_TYPE("4kx4"),
     .C_PROG_EMPTY_THRESH_ASSERT_VAL(2),
-    .C_PROG_EMPTY_THRESH_ASSERT_VAL_AXIS(16382),
+    .C_PROG_EMPTY_THRESH_ASSERT_VAL_AXIS(4094),
     .C_PROG_EMPTY_THRESH_ASSERT_VAL_RACH(14),
     .C_PROG_EMPTY_THRESH_ASSERT_VAL_RDCH(1022),
     .C_PROG_EMPTY_THRESH_ASSERT_VAL_WACH(14),
@@ -190,7 +198,7 @@ output [14 : 0] axis_data_count;
     .C_PROG_EMPTY_TYPE_WDCH(0),
     .C_PROG_EMPTY_TYPE_WRCH(0),
     .C_PROG_FULL_THRESH_ASSERT_VAL(1022),
-    .C_PROG_FULL_THRESH_ASSERT_VAL_AXIS(16383),
+    .C_PROG_FULL_THRESH_ASSERT_VAL_AXIS(4095),
     .C_PROG_FULL_THRESH_ASSERT_VAL_RACH(15),
     .C_PROG_FULL_THRESH_ASSERT_VAL_RDCH(1023),
     .C_PROG_FULL_THRESH_ASSERT_VAL_WACH(15),
@@ -238,7 +246,7 @@ output [14 : 0] axis_data_count;
     .C_WR_ACK_LOW(0),
     .C_WR_DATA_COUNT_WIDTH(10),
     .C_WR_DEPTH(1024),
-    .C_WR_DEPTH_AXIS(16384),
+    .C_WR_DEPTH_AXIS(4096),
     .C_WR_DEPTH_RACH(16),
     .C_WR_DEPTH_RDCH(1024),
     .C_WR_DEPTH_WACH(16),
@@ -246,7 +254,7 @@ output [14 : 0] axis_data_count;
     .C_WR_DEPTH_WRCH(16),
     .C_WR_FREQ(1),
     .C_WR_PNTR_WIDTH(10),
-    .C_WR_PNTR_WIDTH_AXIS(14),
+    .C_WR_PNTR_WIDTH_AXIS(12),
     .C_WR_PNTR_WIDTH_RACH(4),
     .C_WR_PNTR_WIDTH_RDCH(10),
     .C_WR_PNTR_WIDTH_WACH(4),
@@ -262,11 +270,15 @@ output [14 : 0] axis_data_count;
     .S_AXIS_TREADY(s_axis_tready),
     .S_AXIS_TDATA(s_axis_tdata),
     .S_AXIS_TLAST(s_axis_tlast),
+    .S_AXIS_TDEST(s_axis_tdest),
     .M_AXIS_TVALID(m_axis_tvalid),
     .M_AXIS_TREADY(m_axis_tready),
     .M_AXIS_TDATA(m_axis_tdata),
     .M_AXIS_TLAST(m_axis_tlast),
+    .M_AXIS_TDEST(m_axis_tdest),
     .AXIS_DATA_COUNT(axis_data_count),
+    .AXIS_OVERFLOW(axis_overflow),
+    .AXIS_UNDERFLOW(axis_underflow),
     .BACKUP(),
     .BACKUP_MARKER(),
     .CLK(),
@@ -400,12 +412,10 @@ output [14 : 0] axis_data_count;
     .S_AXIS_TSTRB(),
     .S_AXIS_TKEEP(),
     .S_AXIS_TID(),
-    .S_AXIS_TDEST(),
     .S_AXIS_TUSER(),
     .M_AXIS_TSTRB(),
     .M_AXIS_TKEEP(),
     .M_AXIS_TID(),
-    .M_AXIS_TDEST(),
     .M_AXIS_TUSER(),
     .AXI_AW_INJECTSBITERR(),
     .AXI_AW_INJECTDBITERR(),
@@ -480,8 +490,6 @@ output [14 : 0] axis_data_count;
     .AXIS_RD_DATA_COUNT(),
     .AXIS_SBITERR(),
     .AXIS_DBITERR(),
-    .AXIS_OVERFLOW(),
-    .AXIS_UNDERFLOW(),
     .AXIS_PROG_FULL(),
     .AXIS_PROG_EMPTY()
   );

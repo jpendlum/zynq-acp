@@ -45,7 +45,7 @@
 # PART OF THIS FILE AT ALL TIMES.
 
 
-set device xc7z020clg484-1
+set device xc7z045ffg900-2
 set projName xlnx_axi_fifo
 set design xlnx_axi_fifo
 set projDir [file dirname [info script]]

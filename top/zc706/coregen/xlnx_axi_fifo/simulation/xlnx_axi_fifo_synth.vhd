@@ -111,7 +111,9 @@ ARCHITECTURE simulation_arch OF xlnx_axi_fifo_synth IS
     SIGNAL s_axis_tdata                   :   STD_LOGIC_VECTOR(64-1 DOWNTO 0);
     SIGNAL s_axis_tlast                   :   STD_LOGIC;
     SIGNAL s_axis_tdest                   :   STD_LOGIC_VECTOR(2-1 DOWNTO 0);
-    SIGNAL axis_data_count                :   STD_LOGIC_VECTOR(14 DOWNTO 0);
+    SIGNAL axis_data_count                :   STD_LOGIC_VECTOR(12 DOWNTO 0);
+    SIGNAL axis_overflow                  :   STD_LOGIC;
+    SIGNAL axis_underflow                 :   STD_LOGIC;
     SIGNAL s_aclk_i		          :   STD_LOGIC;
    -- TB Signals
     SIGNAL prc_we_i                       :   STD_LOGIC := '0';
@@ -231,8 +233,8 @@ ARCHITECTURE simulation_arch OF xlnx_axi_fifo_synth IS
               C_APPLICATION_TYPE  => 0,
 	      C_DOUT_WIDTH        => 67,
 	      C_DIN_WIDTH         => 67,
-	      C_WR_PNTR_WIDTH     => 14,
-    	      C_RD_PNTR_WIDTH     => 14,
+	      C_WR_PNTR_WIDTH     => 12,
+    	      C_RD_PNTR_WIDTH     => 12,
  	      C_CH_TYPE           => 0,
               FREEZEON_ERROR      => FREEZEON_ERROR,
 	      TB_SEED             => TB_SEED, 
@@ -277,6 +279,8 @@ ARCHITECTURE simulation_arch OF xlnx_axi_fifo_synth IS
            S_AXIS_TLAST              => s_axis_tlast,
            S_AXIS_TDEST              => s_axis_tdest,
            AXIS_DATA_COUNT           => axis_data_count,
+           AXIS_OVERFLOW             => axis_overflow,
+           AXIS_UNDERFLOW            => axis_underflow,
            S_ACLK                    => s_aclk_i);
 
 END ARCHITECTURE;

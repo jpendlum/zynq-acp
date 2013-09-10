@@ -49,6 +49,7 @@ xlnx_axi_fifo/simulation/xlnx_axi_fifo_tb.vhd
 xlnx_axi_fifo.asy
 xlnx_axi_fifo.gise
 xlnx_axi_fifo.ngc
+xlnx_axi_fifo.sym
 xlnx_axi_fifo.v
 xlnx_axi_fifo.veo
 xlnx_axi_fifo.xco

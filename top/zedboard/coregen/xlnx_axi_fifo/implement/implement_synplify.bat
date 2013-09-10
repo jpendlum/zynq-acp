@@ -69,7 +69,7 @@ cd results
 
 echo 'Running ngdbuild'
 
-ngdbuild -p xc7z020-clg484-1 -sd ../../../ xlnx_axi_fifo_exdes
+ngdbuild -p xc7z045-ffg900-2 -sd ../../../ xlnx_axi_fifo_exdes
 
 echo 'Running map'
 map xlnx_axi_fifo_exdes -o mapped.ncd

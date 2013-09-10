@@ -26,6 +26,10 @@ LINE Normal 832 944 800 944
 PIN 832 944 RIGHT 36
 PINATTR PinName m_axis_tlast
 PINATTR Polarity OUT
+LINE Wide 832 1008 800 1008
+PIN 832 1008 RIGHT 36
+PINATTR PinName m_axis_tdest[1:0]
+PINATTR Polarity OUT
 LINE Normal 0 784 32 784
 PIN 0 784 LEFT 36
 PINATTR PinName s_axis_tvalid
@@ -42,8 +46,20 @@ LINE Normal 0 944 32 944
 PIN 0 944 LEFT 36
 PINATTR PinName s_axis_tlast
 PINATTR Polarity IN
+LINE Wide 0 1008 32 1008
+PIN 0 1008 LEFT 36
+PINATTR PinName s_axis_tdest[1:0]
+PINATTR Polarity IN
+LINE Normal 0 1168 32 1168
+PIN 0 1168 LEFT 36
+PINATTR PinName axis_overflow
+PINATTR Polarity OUT
+LINE Normal 832 1168 800 1168
+PIN 832 1168 RIGHT 36
+PINATTR PinName axis_underflow
+PINATTR Polarity OUT
 LINE Wide 832 1232 800 1232
 PIN 832 1232 RIGHT 36
-PINATTR PinName axis_data_count[14:0]
+PINATTR PinName axis_data_count[12:0]
 PINATTR Polarity OUT
 

@@ -50,8 +50,16 @@ LINE Wide 0 1008 32 1008
 PIN 0 1008 LEFT 36
 PINATTR PinName s_axis_tdest[1:0]
 PINATTR Polarity IN
+LINE Normal 0 1168 32 1168
+PIN 0 1168 LEFT 36
+PINATTR PinName axis_overflow
+PINATTR Polarity OUT
+LINE Normal 832 1168 800 1168
+PIN 832 1168 RIGHT 36
+PINATTR PinName axis_underflow
+PINATTR Polarity OUT
 LINE Wide 832 1232 800 1232
 PIN 832 1232 RIGHT 36
-PINATTR PinName axis_data_count[14:0]
+PINATTR PinName axis_data_count[12:0]
 PINATTR Polarity OUT
 

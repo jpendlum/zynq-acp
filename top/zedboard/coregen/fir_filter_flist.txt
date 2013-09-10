@@ -12,6 +12,7 @@ fir_filter.asy
 fir_filter.gise
 fir_filter.mif
 fir_filter.ngc
+fir_filter.sym
 fir_filter.v
 fir_filter.veo
 fir_filter.xco

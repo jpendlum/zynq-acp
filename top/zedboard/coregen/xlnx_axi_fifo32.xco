@@ -1,7 +1,7 @@
 ##############################################################
 #
-# Xilinx Core Generator version 14.5
-# Date: Mon Jun 10 15:58:36 2013
+# Xilinx Core Generator version 14.6
+# Date: Mon Jul  1 18:08:46 2013
 #
 ##############################################################
 #
@@ -210,4 +210,4 @@ CSET wuser_width=1
 MISC pkg_timestamp=2012-11-19T12:39:56Z
 # END Extra information
 GENERATE
-# CRC: f5ad8f04
+# CRC: b5c796bd
